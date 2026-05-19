@@ -1,15 +1,15 @@
-import type { Metadata, Viewport } from 'next';
-import './globals.css';
-import { Header } from '@/components/Header';
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: 'Skyline — Flight Management',
-  description: 'Search, book, and manage flights.',
+  title: "Skyline — Flight Management",
+  description: "Search, book, and manage flights.",
 };
 
 export const viewport: Viewport = {
-  themeColor: '#2563eb',
-  width: 'device-width',
+  themeColor: "#2563eb",
+  width: "device-width",
   initialScale: 1,
 };
 

@@ -2,12 +2,12 @@
 // Server-renders the flight summary and the initial seat snapshot; the
 // SeatMap then takes over for Realtime sync on the client.
 
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { BookingPanel } from './BookingPanel';
-import { formatDateTime, flightDuration, formatPrice } from '@/lib/utils';
-import type { FlightRow, SeatRow } from '@/lib/types';
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { BookingPanel } from "./BookingPanel";
+import { formatDateTime, flightDuration, formatPrice } from "@/lib/utils";
+import type { FlightRow, SeatRow } from "@/lib/types";
 
 export default async function FlightDetailPage({
   params,
@@ -20,18 +20,18 @@ export default async function FlightDetailPage({
   } = await supabase.auth.getUser();
 
   const { data: flight } = await supabase
-    .from('flights')
-    .select('*')
-    .eq('id', params.id)
+    .from("flights")
+    .select("*")
+    .eq("id", params.id)
     .single<FlightRow>();
 
   if (!flight) notFound();
 
   const { data: seats } = await supabase
-    .from('seats')
-    .select('*')
-    .eq('flight_id', flight.id)
-    .order('seat_number', { ascending: true })
+    .from("seats")
+    .select("*")
+    .eq("flight_id", flight.id)
+    .order("seat_number", { ascending: true })
     .returns<SeatRow[]>();
 
   return (
@@ -55,7 +55,8 @@ export default async function FlightDetailPage({
           </p>
         </div>
         <p className="mt-2 text-sm text-slate-600">
-          Depart {formatDateTime(flight.departs_at)} · Arrive {formatDateTime(flight.arrives_at)} ·{' '}
+          Depart {formatDateTime(flight.departs_at)} · Arrive{" "}
+          {formatDateTime(flight.arrives_at)} ·{" "}
           {flightDuration(flight.departs_at, flight.arrives_at)}
         </p>
       </section>

@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { useUserStore } from '@/store/user-store';
-import { Spinner } from '@/components/Spinner';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useUserStore } from "@/store/user-store";
+import { Spinner } from "@/components/Spinner";
 
 export function SignupForm() {
   const router = useRouter();
   const setSession = useUserStore((s) => s.setSession);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -36,10 +36,10 @@ export function SignupForm() {
           token: data.session.access_token,
         });
         router.refresh();
-        router.push('/search');
+        router.push("/search");
       } else {
         setMessage(
-          'Account created. Check your email for the confirmation link, then sign in.',
+          "Account created. Check your email for the confirmation link, then sign in.",
         );
       }
     });
@@ -69,7 +69,9 @@ export function SignupForm() {
           onChange={(e) => setPassword(e.target.value)}
           className="mt-1 w-full rounded border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500"
         />
-        <span className="mt-1 block text-xs text-slate-500">At least 6 characters.</span>
+        <span className="mt-1 block text-xs text-slate-500">
+          At least 6 characters.
+        </span>
       </label>
       {error && (
         <p className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
@@ -90,7 +92,7 @@ export function SignupForm() {
         Create account
       </button>
       <p className="text-center text-sm text-slate-600">
-        Already have one?{' '}
+        Already have one?{" "}
         <Link href="/login" className="text-brand-700 hover:underline">
           Sign in
         </Link>

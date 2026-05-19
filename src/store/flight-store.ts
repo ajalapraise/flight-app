@@ -12,12 +12,18 @@
 // The reset() action wipes the in-progress booking. Called on confirmation
 // success, on cancellation, and on logout (see user-store.ts).
 
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-export type BookingStep = 'search' | 'select-flight' | 'select-seat' | 'passenger' | 'review' | 'done';
+export type BookingStep =
+  | "search"
+  | "select-flight"
+  | "select-seat"
+  | "passenger"
+  | "review"
+  | "done";
 
 export interface SearchQuery {
   origin: string;
@@ -51,17 +57,17 @@ export interface FlightState {
 }
 
 const initialPassengerForm: PassengerForm = {
-  full_name: '',
-  passport_no: '',
-  nationality: '',
-  dob: '',
+  full_name: "",
+  passport_no: "",
+  nationality: "",
+  dob: "",
 };
 
 const initialState = {
   searchQuery: null,
   selectedFlightId: null,
   selectedSeatId: null,
-  currentStep: 'search' as BookingStep,
+  currentStep: "search" as BookingStep,
   passengerForm: initialPassengerForm,
 };
 
@@ -70,19 +76,28 @@ export const useFlightStore = create<FlightState>()(
     (set) => ({
       ...initialState,
 
-      setSearchQuery: (searchQuery) => set({ searchQuery, currentStep: 'select-flight' }),
+      setSearchQuery: (searchQuery) =>
+        set({ searchQuery, currentStep: "select-flight" }),
       setSelectedFlight: (selectedFlightId) =>
-        set({ selectedFlightId, currentStep: selectedFlightId ? 'select-seat' : 'select-flight' }),
+        set({
+          selectedFlightId,
+          currentStep: selectedFlightId ? "select-seat" : "select-flight",
+        }),
       setSelectedSeat: (selectedSeatId) =>
-        set({ selectedSeatId, currentStep: selectedSeatId ? 'passenger' : 'select-seat' }),
+        set({
+          selectedSeatId,
+          currentStep: selectedSeatId ? "passenger" : "select-seat",
+        }),
       setStep: (currentStep) => set({ currentStep }),
       updatePassengerForm: (patch) =>
-        set((state) => ({ passengerForm: { ...state.passengerForm, ...patch } })),
+        set((state) => ({
+          passengerForm: { ...state.passengerForm, ...patch },
+        })),
 
       reset: () => set({ ...initialState }),
     }),
     {
-      name: 'flight-booking-v1',
+      name: "flight-booking-v1",
       storage: createJSONStorage(() => localStorage),
       // partialize: strip passport_no before writing to localStorage. The
       // brief calls this out explicitly under Task 04.
@@ -93,7 +108,7 @@ export const useFlightStore = create<FlightState>()(
         currentStep: state.currentStep,
         passengerForm: {
           full_name: state.passengerForm.full_name,
-          passport_no: '', // never persisted
+          passport_no: "", // never persisted
           nationality: state.passengerForm.nationality,
           dob: state.passengerForm.dob,
         },

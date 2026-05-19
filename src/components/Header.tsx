@@ -2,9 +2,9 @@
 // renders the nav. Sign-out is delegated to a tiny client component so we
 // don't have to ship the whole header as a client bundle.
 
-import Link from 'next/link';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { SignOutButton } from './SignOutButton';
+import Link from "next/link";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { SignOutButton } from "./SignOutButton";
 
 export async function Header() {
   const supabase = createSupabaseServerClient();

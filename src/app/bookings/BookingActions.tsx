@@ -2,14 +2,14 @@
 // (atomic — flips booking.status and frees the seat in one transaction).
 // Reschedule routes to a dedicated page.
 
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
-import type { BookingStatus } from '@/lib/types';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import type { BookingStatus } from "@/lib/types";
 
 export interface BookingActionsProps {
   bookingId: string;
@@ -18,13 +18,18 @@ export interface BookingActionsProps {
   hoursOut: number;
 }
 
-export function BookingActions({ bookingId, status, canModify, hoursOut }: BookingActionsProps) {
+export function BookingActions({
+  bookingId,
+  status,
+  canModify,
+  hoursOut,
+}: BookingActionsProps) {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
-  if (status === 'cancelled') {
+  if (status === "cancelled") {
     return <p className="text-xs text-slate-500">No actions available</p>;
   }
 
@@ -41,7 +46,9 @@ export function BookingActions({ bookingId, status, canModify, hoursOut }: Booki
     setError(null);
     start(async () => {
       const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.rpc('cancel_booking', { p_booking_id: bookingId });
+      const { error } = await supabase.rpc("cancel_booking", {
+        p_booking_id: bookingId,
+      });
       if (error) {
         setError(humanize(error.message));
         return;
@@ -85,9 +92,11 @@ export function BookingActions({ bookingId, status, canModify, hoursOut }: Booki
 }
 
 function humanize(msg: string): string {
-  if (msg.includes('cancel_window_closed'))
+  if (msg.includes("cancel_window_closed"))
     return "Cancellations can't be made within 2 hours of departure.";
-  if (msg.includes('already_cancelled')) return 'This booking has already been cancelled.';
-  if (msg.includes('forbidden')) return 'You can only cancel your own bookings.';
+  if (msg.includes("already_cancelled"))
+    return "This booking has already been cancelled.";
+  if (msg.includes("forbidden"))
+    return "You can only cancel your own bookings.";
   return msg;
 }

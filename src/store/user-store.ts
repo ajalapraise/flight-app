@@ -11,17 +11,20 @@
 // the offline / stale-while-revalidate experience possible (Task 05 bonus,
 // but harmless to keep even without PWA).
 
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { useFlightStore } from './flight-store';
-import type { BookingRow, FlightRow, SeatRow } from '@/lib/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { useFlightStore } from "./flight-store";
+import type { BookingRow, FlightRow, SeatRow } from "@/lib/types";
 
 export interface CachedBooking {
   booking: BookingRow;
-  flight: Pick<FlightRow, 'id' | 'flight_no' | 'origin' | 'destination' | 'departs_at' | 'arrives_at'>;
-  seat: Pick<SeatRow, 'id' | 'seat_number' | 'class'>;
+  flight: Pick<
+    FlightRow,
+    "id" | "flight_no" | "origin" | "destination" | "departs_at" | "arrives_at"
+  >;
+  seat: Pick<SeatRow, "id" | "seat_number" | "class">;
 }
 
 export interface UserState {
@@ -46,18 +49,24 @@ export const useUserStore = create<UserState>()(
 
       setSession: ({ userId, email, token }) =>
         set({ userId, email, sessionToken: token }),
-      clearSession: () => set({ userId: null, email: null, sessionToken: null }),
+      clearSession: () =>
+        set({ userId: null, email: null, sessionToken: null }),
       setCachedBookings: (cachedBookings) => set({ cachedBookings }),
 
       // reset on logout — also reset the flight booking store so we don't
       // leak in-progress passenger data between accounts.
       reset: () => {
-        set({ userId: null, email: null, sessionToken: null, cachedBookings: [] });
+        set({
+          userId: null,
+          email: null,
+          sessionToken: null,
+          cachedBookings: [],
+        });
         useFlightStore.getState().reset();
       },
     }),
     {
-      name: 'user-session-v1',
+      name: "user-session-v1",
       storage: createJSONStorage(() => localStorage),
       // Persist only the session token (per the brief) plus the cached
       // bookings list (needed for the My Bookings offline read).

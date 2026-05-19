@@ -1,16 +1,16 @@
 // Two-pane client component: the SeatMap on top + the passenger form below.
 // Owns the reserve_seat RPC call.
 
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, useTransition } from 'react';
-import { SeatMap } from '@/components/SeatMap';
-import { Spinner } from '@/components/Spinner';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { useFlightStore } from '@/store/flight-store';
-import { formatPrice } from '@/lib/utils';
-import type { FlightRow, SeatRow } from '@/lib/types';
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { SeatMap } from "@/components/SeatMap";
+import { Spinner } from "@/components/Spinner";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useFlightStore } from "@/store/flight-store";
+import { formatPrice } from "@/lib/utils";
+import type { FlightRow, SeatRow } from "@/lib/types";
 
 export interface BookingPanelProps {
   flight: FlightRow;
@@ -18,7 +18,11 @@ export interface BookingPanelProps {
   isAuthenticated: boolean;
 }
 
-export function BookingPanel({ flight, initialSeats, isAuthenticated }: BookingPanelProps) {
+export function BookingPanel({
+  flight,
+  initialSeats,
+  isAuthenticated,
+}: BookingPanelProps) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -63,13 +67,13 @@ export function BookingPanel({ flight, initialSeats, isAuthenticated }: BookingP
       return;
     }
     if (!selectedSeat) {
-      setError('Please pick a seat.');
+      setError("Please pick a seat.");
       return;
     }
 
     start(async () => {
       const supabase = createSupabaseBrowserClient();
-      const { data, error } = await supabase.rpc('reserve_seat', {
+      const { data, error } = await supabase.rpc("reserve_seat", {
         p_flight_id: flight.id,
         p_seat_id: selectedSeat.id,
         p_full_name: passengerForm.full_name.trim(),
@@ -82,7 +86,7 @@ export function BookingPanel({ flight, initialSeats, isAuthenticated }: BookingP
         setError(humanizeRpcError(error?.message));
         // If the seat was grabbed by someone else, drop it from the store
         // so the SeatMap re-paints it as occupied on the next Realtime tick.
-        if (error?.message?.includes('seat_unavailable')) {
+        if (error?.message?.includes("seat_unavailable")) {
           setSelectedSeat(null);
         }
         return;
@@ -107,7 +111,9 @@ export function BookingPanel({ flight, initialSeats, isAuthenticated }: BookingP
       </section>
 
       <aside className="space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm h-fit">
-        <h2 className="text-lg font-semibold text-slate-900">Passenger details</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          Passenger details
+        </h2>
         <form onSubmit={onSubmit} className="space-y-3">
           <Field
             label="Full name"
@@ -142,14 +148,21 @@ export function BookingPanel({ flight, initialSeats, isAuthenticated }: BookingP
           <div className="rounded border border-slate-200 bg-slate-50 p-3 text-sm">
             <div className="flex justify-between">
               <span className="text-slate-600">Base fare</span>
-              <span className="text-slate-900">{formatPrice(flight.base_price)}</span>
+              <span className="text-slate-900">
+                {formatPrice(flight.base_price)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">
-                Seat {selectedSeat ? `${selectedSeat.seat_number} (${selectedSeat.class})` : '—'}
+                Seat{" "}
+                {selectedSeat
+                  ? `${selectedSeat.seat_number} (${selectedSeat.class})`
+                  : "—"}
               </span>
               <span className="text-slate-900">
-                {selectedSeat ? formatPrice(Number(selectedSeat.extra_fee)) : '—'}
+                {selectedSeat
+                  ? formatPrice(Number(selectedSeat.extra_fee))
+                  : "—"}
               </span>
             </div>
             <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
@@ -170,7 +183,7 @@ export function BookingPanel({ flight, initialSeats, isAuthenticated }: BookingP
             className="inline-flex w-full items-center justify-center gap-2 rounded bg-brand-600 px-4 py-2 text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {pending && <Spinner />}
-            {isAuthenticated ? 'Confirm booking' : 'Sign in to book'}
+            {isAuthenticated ? "Confirm booking" : "Sign in to book"}
           </button>
         </form>
       </aside>
@@ -191,25 +204,34 @@ function Field(props: {
     <label className="block">
       <span className="text-sm font-medium text-slate-700">{props.label}</span>
       <input
-        type={props.type ?? 'text'}
+        type={props.type ?? "text"}
         required={props.required}
         autoComplete={props.autoComplete}
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         className="mt-1 w-full rounded border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500"
       />
-      {props.hint && <span className="mt-0.5 block text-xs text-slate-500">{props.hint}</span>}
+      {props.hint && (
+        <span className="mt-0.5 block text-xs text-slate-500">
+          {props.hint}
+        </span>
+      )}
     </label>
   );
 }
 
 // Map the Postgres-side raise_exception strings to friendly text.
 function humanizeRpcError(msg: string | undefined): string {
-  if (!msg) return 'Could not complete your booking. Please try again.';
-  if (msg.includes('seat_unavailable')) return 'That seat was just taken. Please pick another.';
-  if (msg.includes('seat_not_found')) return 'Seat not found. Please refresh and try again.';
-  if (msg.includes('flight_not_bookable')) return 'This flight is no longer available for booking.';
-  if (msg.includes('not_authenticated')) return 'Please sign in to book a seat.';
-  if (msg.includes('pnr_generation_failed')) return 'A temporary error occurred. Please try again.';
+  if (!msg) return "Could not complete your booking. Please try again.";
+  if (msg.includes("seat_unavailable"))
+    return "That seat was just taken. Please pick another.";
+  if (msg.includes("seat_not_found"))
+    return "Seat not found. Please refresh and try again.";
+  if (msg.includes("flight_not_bookable"))
+    return "This flight is no longer available for booking.";
+  if (msg.includes("not_authenticated"))
+    return "Please sign in to book a seat.";
+  if (msg.includes("pnr_generation_failed"))
+    return "A temporary error occurred. Please try again.";
   return msg;
 }

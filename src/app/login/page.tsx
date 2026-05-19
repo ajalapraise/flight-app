@@ -1,8 +1,8 @@
 // Login page — server-rendered shell, client form. We accept ?next= so
 // the middleware redirect can send users back where they came from.
 
-import { Suspense } from 'react';
-import { LoginForm } from './LoginForm';
+import { Suspense } from "react";
+import { LoginForm } from "./LoginForm";
 
 export default function LoginPage() {
   return (

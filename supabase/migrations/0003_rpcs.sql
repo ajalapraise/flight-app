@@ -70,7 +70,7 @@ begin
   -- Generate a unique PNR; retry on the (vanishingly rare) collision.
   loop
     v_pnr := public.generate_pnr();
-    exit when not exists (select 1 from public.bookings where pnr_code = v_pnr);
+    exit when not exists (select 1 from public.bookings b where b.pnr_code = v_pnr);
     v_attempts := v_attempts + 1;
     if v_attempts > 10 then
       raise exception 'pnr_generation_failed' using errcode = 'P0005';

@@ -2,12 +2,16 @@
 // into useUserStore's persisted slice so the same list is readable when
 // the user opens the page offline.
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useUserStore, type CachedBooking } from '@/store/user-store';
+import { useEffect } from "react";
+import { useUserStore, type CachedBooking } from "@/store/user-store";
 
-export function CacheBookingsForOffline({ snapshot }: { snapshot: CachedBooking[] }) {
+export function CacheBookingsForOffline({
+  snapshot,
+}: {
+  snapshot: CachedBooking[];
+}) {
   const setCachedBookings = useUserStore((s) => s.setCachedBookings);
   useEffect(() => {
     setCachedBookings(snapshot);

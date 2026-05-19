@@ -2,9 +2,9 @@
 // (cancel booking, etc). Built on top of <dialog> so we get the native
 // focus trap, escape handling, and backdrop for free.
 
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -22,8 +22,8 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
   destructive = false,
   pending = false,
   onConfirm,
@@ -67,11 +67,11 @@ export function ConfirmDialog({
             onClick={onConfirm}
             className={`rounded px-3 py-1.5 text-sm text-white disabled:opacity-50 ${
               destructive
-                ? 'bg-rose-600 hover:bg-rose-700'
-                : 'bg-brand-600 hover:bg-brand-700'
+                ? "bg-rose-600 hover:bg-rose-700"
+                : "bg-brand-600 hover:bg-brand-700"
             }`}
           >
-            {pending ? 'Working…' : confirmLabel}
+            {pending ? "Working…" : confirmLabel}
           </button>
         </div>
       </div>

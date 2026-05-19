@@ -2,11 +2,11 @@
 // plus per-class seat counts so the FlightCard can show availability
 // without fetching the full seat list.
 
-import Link from 'next/link';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { FlightCard } from '@/components/FlightCard';
-import { formatDate } from '@/lib/utils';
-import type { FlightRow, SeatClass } from '@/lib/types';
+import Link from "next/link";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { FlightCard } from "@/components/FlightCard";
+import { formatDate } from "@/lib/utils";
+import type { FlightRow, SeatClass } from "@/lib/types";
 
 interface SearchParams {
   origin?: string;
@@ -20,16 +20,19 @@ export default async function FlightsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const origin = searchParams.origin ?? '';
-  const destination = searchParams.destination ?? '';
-  const date = searchParams.date ?? '';
-  const passengers = Number(searchParams.passengers ?? '1');
+  const origin = searchParams.origin ?? "";
+  const destination = searchParams.destination ?? "";
+  const date = searchParams.date ?? "";
+  const passengers = Number(searchParams.passengers ?? "1");
 
   if (!origin || !destination || !date) {
     return (
       <div className="text-center">
         <p className="text-slate-700">Missing search parameters.</p>
-        <Link href="/search" className="mt-3 inline-block text-brand-700 hover:underline">
+        <Link
+          href="/search"
+          className="mt-3 inline-block text-brand-700 hover:underline"
+        >
           ← Back to search
         </Link>
       </div>
@@ -41,17 +44,19 @@ export default async function FlightsPage({
   // Day window: [date 00:00, date+1 00:00). Using UTC to match the seed's
   // `now() + interval` timestamps; in production we'd use the airport's TZ.
   const dayStart = new Date(`${date}T00:00:00Z`).toISOString();
-  const dayEnd = new Date(new Date(`${date}T00:00:00Z`).getTime() + 86_400_000).toISOString();
+  const dayEnd = new Date(
+    new Date(`${date}T00:00:00Z`).getTime() + 86_400_000,
+  ).toISOString();
 
   const { data: flights, error: flightsError } = await supabase
-    .from('flights')
-    .select('*')
-    .eq('origin', origin)
-    .eq('destination', destination)
-    .eq('status', 'scheduled')
-    .gte('departs_at', dayStart)
-    .lt('departs_at', dayEnd)
-    .order('departs_at', { ascending: true })
+    .from("flights")
+    .select("*")
+    .eq("origin", origin)
+    .eq("destination", destination)
+    .eq("status", "scheduled")
+    .gte("departs_at", dayStart)
+    .lt("departs_at", dayEnd)
+    .order("departs_at", { ascending: true })
     .returns<FlightRow[]>();
 
   if (flightsError) {
@@ -63,10 +68,10 @@ export default async function FlightsPage({
   const availability: Record<string, Record<SeatClass, number>> = {};
   if (flightIds.length > 0) {
     const { data: seats } = await supabase
-      .from('seats')
-      .select('flight_id, class, is_available')
-      .in('flight_id', flightIds)
-      .eq('is_available', true);
+      .from("seats")
+      .select("flight_id, class, is_available")
+      .in("flight_id", flightIds)
+      .eq("is_available", true);
 
     for (const id of flightIds) {
       availability[id] = { economy: 0, business: 0, first: 0 };
@@ -86,11 +91,12 @@ export default async function FlightsPage({
           {origin} → {destination}
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          {formatDate(date)} · {passengers} passenger{passengers === 1 ? '' : 's'}
+          {formatDate(date)} · {passengers} passenger
+          {passengers === 1 ? "" : "s"}
         </p>
       </header>
 
-      {(!flights || flights.length === 0) ? (
+      {!flights || flights.length === 0 ? (
         <p className="rounded-lg border border-dashed border-slate-300 p-8 text-center text-sm text-slate-600">
           No flights found on this route for the selected date.
         </p>
@@ -100,7 +106,9 @@ export default async function FlightsPage({
             <li key={f.id}>
               <FlightCard
                 flight={f}
-                classAvailability={availability[f.id] ?? { economy: 0, business: 0, first: 0 }}
+                classAvailability={
+                  availability[f.id] ?? { economy: 0, business: 0, first: 0 }
+                }
               />
             </li>
           ))}

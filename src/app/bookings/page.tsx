@@ -1,23 +1,32 @@
 // My Bookings (Task 03). Server-renders the list under RLS — Supabase will
 // only return rows where bookings.user_id = auth.uid().
 
-import Link from 'next/link';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { StatusBadge } from '@/components/StatusBadge';
-import { BookingActions } from './BookingActions';
-import { CacheBookingsForOffline } from './CacheBookingsForOffline';
-import { formatDateTime, formatPrice, hoursUntil } from '@/lib/utils';
-import type { BookingRow, FlightRow, SeatRow } from '@/lib/types';
+import Link from "next/link";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { StatusBadge } from "@/components/StatusBadge";
+import { BookingActions } from "./BookingActions";
+import { CacheBookingsForOffline } from "./CacheBookingsForOffline";
+import { formatDateTime, formatPrice, hoursUntil } from "@/lib/utils";
+import type { BookingRow, FlightRow, SeatRow } from "@/lib/types";
 
 interface BookingWithJoins extends BookingRow {
-  flights: Pick<FlightRow, 'id' | 'flight_no' | 'origin' | 'destination' | 'departs_at' | 'arrives_at' | 'status'>;
-  seats: Pick<SeatRow, 'id' | 'seat_number' | 'class'>;
+  flights: Pick<
+    FlightRow,
+    | "id"
+    | "flight_no"
+    | "origin"
+    | "destination"
+    | "departs_at"
+    | "arrives_at"
+    | "status"
+  >;
+  seats: Pick<SeatRow, "id" | "seat_number" | "class">;
 }
 
 export default async function MyBookingsPage() {
   const supabase = createSupabaseServerClient();
   const { data: bookings, error } = await supabase
-    .from('bookings')
+    .from("bookings")
     .select(
       `
       id, user_id, flight_id, seat_id, status, booked_at, total_price, pnr_code,
@@ -25,7 +34,7 @@ export default async function MyBookingsPage() {
       seats:seats ( id, seat_number, class )
     `,
     )
-    .order('booked_at', { ascending: false })
+    .order("booked_at", { ascending: false })
     .returns<BookingWithJoins[]>();
 
   if (error) {
@@ -43,8 +52,8 @@ export default async function MyBookingsPage() {
       <header>
         <h1 className="text-2xl font-semibold text-slate-900">My bookings</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Everything you&apos;ve booked. Cancellations within 2 hours of departure are blocked at
-          the database level.
+          Everything you&apos;ve booked. Cancellations within 2 hours of
+          departure are blocked at the database level.
         </p>
       </header>
 
@@ -69,7 +78,7 @@ export default async function MyBookingsPage() {
 
       {rows.length === 0 ? (
         <p className="rounded-lg border border-dashed border-slate-300 p-8 text-center text-sm text-slate-600">
-          You have no bookings yet.{' '}
+          You have no bookings yet.{" "}
           <Link href="/search" className="text-brand-700 hover:underline">
             Find a flight →
           </Link>
@@ -78,7 +87,7 @@ export default async function MyBookingsPage() {
         <ul className="space-y-3">
           {rows.map((b) => {
             const hoursOut = hoursUntil(b.flights.departs_at);
-            const canModify = b.status !== 'cancelled' && hoursOut > 2;
+            const canModify = b.status !== "cancelled" && hoursOut > 2;
             return (
               <li
                 key={b.id}
@@ -93,17 +102,18 @@ export default async function MyBookingsPage() {
                       <StatusBadge status={b.status} />
                     </div>
                     <p className="text-sm text-slate-600">
-                      {b.flights.flight_no} · Seat {b.seats.seat_number} ({b.seats.class})
+                      {b.flights.flight_no} · Seat {b.seats.seat_number} (
+                      {b.seats.class})
                     </p>
                     <p className="mt-1 text-sm text-slate-700">
-                      Depart {formatDateTime(b.flights.departs_at)} · Arrive{' '}
+                      Depart {formatDateTime(b.flights.departs_at)} · Arrive{" "}
                       {formatDateTime(b.flights.arrives_at)}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
-                      PNR{' '}
+                      PNR{" "}
                       <span className="font-mono tracking-widest text-slate-800">
                         {b.pnr_code}
-                      </span>{' '}
+                      </span>{" "}
                       · Total {formatPrice(Number(b.total_price))}
                     </p>
                   </div>

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
-import { SeatMap } from '@/components/SeatMap';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Spinner } from '@/components/Spinner';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { formatDateTime, formatPrice, flightDuration } from '@/lib/utils';
-import type { FlightRow, SeatRow } from '@/lib/types';
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { SeatMap } from "@/components/SeatMap";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { Spinner } from "@/components/Spinner";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { formatDateTime, formatPrice, flightDuration } from "@/lib/utils";
+import type { FlightRow, SeatRow } from "@/lib/types";
 
 export interface RescheduleClientProps {
   bookingId: string;
@@ -39,10 +39,10 @@ export function RescheduleClient({
     const supabase = createSupabaseBrowserClient();
     setSeatsLoading(true);
     supabase
-      .from('seats')
-      .select('*')
-      .eq('flight_id', selectedFlight.id)
-      .order('seat_number', { ascending: true })
+      .from("seats")
+      .select("*")
+      .eq("flight_id", selectedFlight.id)
+      .order("seat_number", { ascending: true })
       .returns<SeatRow[]>()
       .then(({ data }) => {
         setSeats(data ?? []);
@@ -52,9 +52,10 @@ export function RescheduleClient({
   }, [selectedFlight]);
 
   const selectedSeat = seats.find((s) => s.id === selectedSeatId) ?? null;
-  const newTotal = selectedFlight && selectedSeat
-    ? Number(selectedFlight.base_price) + Number(selectedSeat.extra_fee)
-    : 0;
+  const newTotal =
+    selectedFlight && selectedSeat
+      ? Number(selectedFlight.base_price) + Number(selectedSeat.extra_fee)
+      : 0;
   const fee = Math.max(0, newTotal - currentTotalPrice);
 
   function doReschedule() {
@@ -62,7 +63,7 @@ export function RescheduleClient({
     setError(null);
     start(async () => {
       const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.rpc('reschedule_booking', {
+      const { error } = await supabase.rpc("reschedule_booking", {
         p_booking_id: bookingId,
         p_new_flight_id: selectedFlight.id,
         p_new_seat_id: selectedSeat.id,
@@ -72,7 +73,7 @@ export function RescheduleClient({
         return;
       }
       setConfirmOpen(false);
-      router.push('/bookings');
+      router.push("/bookings");
       router.refresh();
     });
   }
@@ -88,7 +89,9 @@ export function RescheduleClient({
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="mb-2 text-lg font-semibold text-slate-900">Pick a new flight</h2>
+        <h2 className="mb-2 text-lg font-semibold text-slate-900">
+          Pick a new flight
+        </h2>
         <ul className="space-y-2">
           {candidates.map((f) => {
             const isPicked = selectedFlight?.id === f.id;
@@ -99,21 +102,27 @@ export function RescheduleClient({
                   onClick={() => setSelectedFlight(f)}
                   className={`w-full rounded-lg border bg-white p-4 text-left text-sm shadow-sm transition ${
                     isPicked
-                      ? 'border-brand-500 ring-2 ring-brand-500'
-                      : 'border-slate-200 hover:border-slate-300'
+                      ? "border-brand-500 ring-2 ring-brand-500"
+                      : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-slate-500">{f.flight_no}</p>
+                      <p className="text-xs uppercase tracking-wide text-slate-500">
+                        {f.flight_no}
+                      </p>
                       <p className="font-semibold text-slate-900">
-                        {formatDateTime(f.departs_at)} → {formatDateTime(f.arrives_at)}
+                        {formatDateTime(f.departs_at)} →{" "}
+                        {formatDateTime(f.arrives_at)}
                       </p>
                       <p className="text-slate-600">
-                        {flightDuration(f.departs_at, f.arrives_at)} · {f.aircraft_type}
+                        {flightDuration(f.departs_at, f.arrives_at)} ·{" "}
+                        {f.aircraft_type}
                       </p>
                     </div>
-                    <p className="text-lg font-semibold text-slate-900">{formatPrice(Number(f.base_price))}</p>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {formatPrice(Number(f.base_price))}
+                    </p>
                   </div>
                 </button>
               </li>
@@ -124,7 +133,9 @@ export function RescheduleClient({
 
       {selectedFlight && (
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-slate-900">Pick a seat on {selectedFlight.flight_no}</h2>
+          <h2 className="mb-2 text-lg font-semibold text-slate-900">
+            Pick a seat on {selectedFlight.flight_no}
+          </h2>
           {seatsLoading ? (
             <p className="flex items-center gap-2 text-sm text-slate-600">
               <Spinner /> Loading seats…
@@ -145,11 +156,19 @@ export function RescheduleClient({
           <h3 className="text-sm font-semibold text-slate-900">Fee summary</h3>
           <div className="mt-2 grid grid-cols-2 gap-y-1 text-sm">
             <span className="text-slate-600">Original total</span>
-            <span className="text-right text-slate-900">{formatPrice(currentTotalPrice)}</span>
+            <span className="text-right text-slate-900">
+              {formatPrice(currentTotalPrice)}
+            </span>
             <span className="text-slate-600">New total</span>
-            <span className="text-right text-slate-900">{formatPrice(newTotal)}</span>
-            <span className="font-semibold text-slate-900">Fee charged today</span>
-            <span className="text-right font-semibold text-slate-900">{formatPrice(fee)}</span>
+            <span className="text-right text-slate-900">
+              {formatPrice(newTotal)}
+            </span>
+            <span className="font-semibold text-slate-900">
+              Fee charged today
+            </span>
+            <span className="text-right font-semibold text-slate-900">
+              {formatPrice(fee)}
+            </span>
           </div>
           {fee === 0 && (
             <p className="mt-1 text-xs text-emerald-700">
@@ -188,9 +207,13 @@ export function RescheduleClient({
 }
 
 function humanize(msg: string): string {
-  if (msg.includes('seat_unavailable')) return 'That seat was just taken. Please pick another.';
-  if (msg.includes('route_mismatch')) return 'New flight must be on the same route.';
-  if (msg.includes('booking_cancelled')) return 'You cannot reschedule a cancelled booking.';
-  if (msg.includes('flight_not_bookable')) return 'That flight is no longer bookable.';
+  if (msg.includes("seat_unavailable"))
+    return "That seat was just taken. Please pick another.";
+  if (msg.includes("route_mismatch"))
+    return "New flight must be on the same route.";
+  if (msg.includes("booking_cancelled"))
+    return "You cannot reschedule a cancelled booking.";
+  if (msg.includes("flight_not_bookable"))
+    return "That flight is no longer bookable.";
   return msg;
 }

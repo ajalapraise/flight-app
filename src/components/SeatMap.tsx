@@ -17,12 +17,12 @@
 //     Layout uses a 6-column CSS grid with the centre aisle (between cols
 //     3 and 4) rendered as a thin gap.
 
-'use client';
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import type { SeatRow, SeatClass } from '@/lib/types';
-import { formatPrice } from '@/lib/utils';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import type { SeatRow, SeatClass } from "@/lib/types";
+import { formatPrice } from "@/lib/utils";
 
 export interface SeatMapProps {
   flightId: string;
@@ -33,17 +33,22 @@ export interface SeatMapProps {
 }
 
 // Display order for the zones.
-const CLASS_ORDER: SeatClass[] = ['first', 'business', 'economy'];
+const CLASS_ORDER: SeatClass[] = ["first", "business", "economy"];
 const CLASS_LABEL: Record<SeatClass, string> = {
-  first: 'First class',
-  business: 'Business class',
-  economy: 'Economy',
+  first: "First class",
+  business: "Business class",
+  economy: "Economy",
 };
 
 // The cabin uses 6 columns A-F with an aisle between C (col 3) and D (col 4).
-const COLS = ['A', 'B', 'C', 'D', 'E', 'F'] as const;
+const COLS = ["A", "B", "C", "D", "E", "F"] as const;
 
-export function SeatMap({ flightId, initialSeats, selectedSeatId, onSelect }: SeatMapProps) {
+export function SeatMap({
+  flightId,
+  initialSeats,
+  selectedSeatId,
+  onSelect,
+}: SeatMapProps) {
   const [seats, setSeats] = useState<SeatRow[]>(initialSeats);
 
   // Re-hydrate local state when the parent swaps in a new seat list
@@ -71,16 +76,18 @@ export function SeatMap({ flightId, initialSeats, selectedSeatId, onSelect }: Se
     const channel = supabase
       .channel(`seats:flight=${flightId}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'seats',
+          event: "UPDATE",
+          schema: "public",
+          table: "seats",
           filter: `flight_id=eq.${flightId}`,
         },
         (payload) => {
           const updated = payload.new as SeatRow;
-          setSeats((prev) => prev.map((s) => (s.id === updated.id ? { ...s, ...updated } : s)));
+          setSeats((prev) =>
+            prev.map((s) => (s.id === updated.id ? { ...s, ...updated } : s)),
+          );
           // If the seat *we* had optimistically selected just got taken
           // by someone else, drop our selection.
           if (
@@ -100,7 +107,11 @@ export function SeatMap({ flightId, initialSeats, selectedSeatId, onSelect }: Se
 
   // Group seats by class for the zone rendering.
   const zones = useMemo(() => {
-    const out: Record<SeatClass, SeatRow[]> = { first: [], business: [], economy: [] };
+    const out: Record<SeatClass, SeatRow[]> = {
+      first: [],
+      business: [],
+      economy: [],
+    };
     for (const s of seats) out[s.class].push(s);
     for (const cls of CLASS_ORDER) {
       out[cls].sort(seatCompare);
@@ -116,7 +127,10 @@ export function SeatMap({ flightId, initialSeats, selectedSeatId, onSelect }: Se
         <div className="mx-auto min-w-[320px] max-w-md py-4">
           {/* Nose-of-aircraft indicator */}
           <div className="mb-3 flex justify-center">
-            <div className="h-6 w-24 rounded-t-[50%] border border-slate-200 bg-slate-50" aria-hidden />
+            <div
+              className="h-6 w-24 rounded-t-[50%] border border-slate-200 bg-slate-50"
+              aria-hidden
+            />
           </div>
 
           {CLASS_ORDER.map((cls) => {
@@ -172,12 +186,22 @@ function SeatZone({
       </h3>
       <div className="space-y-1.5">
         {[...rows.entries()].map(([row, rowSeats]) => (
-          <div key={row} className="grid grid-cols-[1.25rem_repeat(3,minmax(0,1fr))_0.5rem_repeat(3,minmax(0,1fr))] items-center gap-1">
-            <span className="text-center text-[10px] font-medium text-slate-400">{row}</span>
+          <div
+            key={row}
+            className="grid grid-cols-[1.25rem_repeat(3,minmax(0,1fr))_0.5rem_repeat(3,minmax(0,1fr))] items-center gap-1"
+          >
+            <span className="text-center text-[10px] font-medium text-slate-400">
+              {row}
+            </span>
             {COLS.slice(0, 3).map((col) => {
               const seat = rowSeats.find((s) => s.seat_number.endsWith(col));
               return seat ? (
-                <Seat key={seat.id} seat={seat} isSelected={seat.id === selectedSeatId} onSelect={onSelect} />
+                <Seat
+                  key={seat.id}
+                  seat={seat}
+                  isSelected={seat.id === selectedSeatId}
+                  onSelect={onSelect}
+                />
               ) : (
                 <div key={col} aria-hidden />
               );
@@ -186,7 +210,12 @@ function SeatZone({
             {COLS.slice(3).map((col) => {
               const seat = rowSeats.find((s) => s.seat_number.endsWith(col));
               return seat ? (
-                <Seat key={seat.id} seat={seat} isSelected={seat.id === selectedSeatId} onSelect={onSelect} />
+                <Seat
+                  key={seat.id}
+                  seat={seat}
+                  isSelected={seat.id === selectedSeatId}
+                  onSelect={onSelect}
+                />
               ) : (
                 <div key={col} aria-hidden />
               );
@@ -210,24 +239,28 @@ function Seat({
   const occupied = !seat.is_available;
   const label = occupied
     ? `${seat.seat_number} — occupied (${seat.class}${
-        Number(seat.extra_fee) > 0 ? `, +${formatPrice(Number(seat.extra_fee))}` : ''
+        Number(seat.extra_fee) > 0
+          ? `, +${formatPrice(Number(seat.extra_fee))}`
+          : ""
       })`
     : `${seat.seat_number} — ${seat.class}${
-        Number(seat.extra_fee) > 0 ? `, +${formatPrice(Number(seat.extra_fee))}` : ''
+        Number(seat.extra_fee) > 0
+          ? `, +${formatPrice(Number(seat.extra_fee))}`
+          : ""
       }`;
 
   let cls =
-    'relative aspect-square min-h-[2rem] rounded-md text-[10px] font-medium select-none touch-manipulation transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+    "relative aspect-square min-h-[2rem] rounded-md text-[10px] font-medium select-none touch-manipulation transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500";
   if (occupied) {
-    cls += ' bg-slate-300 text-slate-500 cursor-not-allowed';
+    cls += " bg-slate-300 text-slate-500 cursor-not-allowed";
   } else if (isSelected) {
-    cls += ' bg-brand-600 text-white ring-2 ring-brand-700';
-  } else if (seat.class === 'first') {
-    cls += ' bg-amber-100 text-amber-900 hover:bg-amber-200';
-  } else if (seat.class === 'business') {
-    cls += ' bg-indigo-100 text-indigo-900 hover:bg-indigo-200';
+    cls += " bg-brand-600 text-white ring-2 ring-brand-700";
+  } else if (seat.class === "first") {
+    cls += " bg-amber-100 text-amber-900 hover:bg-amber-200";
+  } else if (seat.class === "business") {
+    cls += " bg-indigo-100 text-indigo-900 hover:bg-indigo-200";
   } else {
-    cls += ' bg-emerald-100 text-emerald-900 hover:bg-emerald-200';
+    cls += " bg-emerald-100 text-emerald-900 hover:bg-emerald-200";
   }
 
   return (
@@ -240,7 +273,7 @@ function Seat({
       aria-pressed={isSelected}
       className={cls}
     >
-      {seat.seat_number.replace(/^\d+/, '')}
+      {seat.seat_number.replace(/^\d+/, "")}
     </button>
   );
 }
@@ -258,5 +291,10 @@ function Legend() {
 }
 
 function Swatch({ className }: { className: string }) {
-  return <span className={`inline-block h-3 w-3 rounded-sm ring-1 ring-inset ${className}`} aria-hidden />;
+  return (
+    <span
+      className={`inline-block h-3 w-3 rounded-sm ring-1 ring-inset ${className}`}
+      aria-hidden
+    />
+  );
 }

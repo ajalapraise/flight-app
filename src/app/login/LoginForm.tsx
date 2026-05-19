@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { useUserStore } from '@/store/user-store';
-import { Spinner } from '@/components/Spinner';
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useUserStore } from "@/store/user-store";
+import { Spinner } from "@/components/Spinner";
 
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get('next') || '/search';
+  const next = params.get("next") || "/search";
   const setSession = useUserStore((s) => s.setSession);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -23,9 +23,14 @@ export function LoginForm() {
     setError(null);
     start(async () => {
       const supabase = createSupabaseBrowserClient();
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error || !data.session || !data.user) {
-        setError(error?.message ?? 'Sign-in failed. Check your email and password.');
+        setError(
+          error?.message ?? "Sign-in failed. Check your email and password.",
+        );
         return;
       }
       setSession({
@@ -70,7 +75,7 @@ export function LoginForm() {
         Sign in
       </button>
       <p className="text-center text-sm text-slate-600">
-        New here?{' '}
+        New here?{" "}
         <Link href="/signup" className="text-brand-700 hover:underline">
           Create an account
         </Link>

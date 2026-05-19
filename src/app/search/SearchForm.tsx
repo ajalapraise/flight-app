@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useFlightStore } from '@/store/flight-store';
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useFlightStore } from "@/store/flight-store";
 
 export interface SearchFormProps {
   origins: string[];
@@ -23,9 +23,9 @@ export function SearchForm({ origins, destinations }: SearchFormProps) {
   // store here would cause a React hydration mismatch because the server
   // doesn't have access to localStorage. We hydrate from the store inside
   // a useEffect after mount.
-  const [origin, setOrigin] = useState(origins[0] ?? '');
+  const [origin, setOrigin] = useState(origins[0] ?? "");
   const [destination, setDestination] = useState(
-    destinations.find((d) => d !== origins[0]) ?? destinations[0] ?? '',
+    destinations.find((d) => d !== origins[0]) ?? destinations[0] ?? "",
   );
   const [date, setDate] = useState(todayPlusDays(1));
   const [passengers, setPassengers] = useState(1);
@@ -44,7 +44,12 @@ export function SearchForm({ origins, destinations }: SearchFormProps) {
     e.preventDefault();
     if (origin === destination) return;
     setSearchQuery({ origin, destination, date, passengers });
-    const params = new URLSearchParams({ origin, destination, date, passengers: String(passengers) });
+    const params = new URLSearchParams({
+      origin,
+      destination,
+      date,
+      passengers: String(passengers),
+    });
     router.push(`/flights?${params.toString()}`);
   }
 
@@ -84,7 +89,9 @@ export function SearchForm({ origins, destinations }: SearchFormProps) {
       </label>
 
       <label className="block sm:col-span-1">
-        <span className="text-sm font-medium text-slate-700">Departure date</span>
+        <span className="text-sm font-medium text-slate-700">
+          Departure date
+        </span>
         <input
           type="date"
           value={date}
@@ -101,7 +108,9 @@ export function SearchForm({ origins, destinations }: SearchFormProps) {
           value={passengers}
           min={1}
           max={9}
-          onChange={(e) => setPassengers(Math.max(1, Math.min(9, Number(e.target.value) || 1)))}
+          onChange={(e) =>
+            setPassengers(Math.max(1, Math.min(9, Number(e.target.value) || 1)))
+          }
           className="mt-1 w-full rounded border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500"
         />
       </label>
