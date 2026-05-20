@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { StatusBadge } from "@/components/StatusBadge";
 import { BookingActions } from "./BookingActions";
 import { CacheBookingsForOffline } from "./CacheBookingsForOffline";
-import { formatDateTime, formatPrice, hoursUntil } from "@/lib/utils";
+import { formatDateTime, formatPrice, hoursUntil, airportLabel } from "@/lib/utils";
 import type { BookingRow, FlightRow, SeatRow } from "@/lib/types";
 
 interface BookingWithJoins extends BookingRow {
@@ -97,7 +97,7 @@ export default async function MyBookingsPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold text-slate-900">
-                        {b.flights.origin} → {b.flights.destination}
+                        {airportLabel(b.flights.origin)} → {airportLabel(b.flights.destination)}
                       </h3>
                       <StatusBadge status={b.status} />
                     </div>

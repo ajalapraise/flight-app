@@ -5,7 +5,7 @@
 // list view — same idea as the Go assignment's list/detail split.
 
 import Link from "next/link";
-import { formatPrice, formatTime, flightDuration } from "@/lib/utils";
+import { formatPrice, formatTime, flightDuration, airportLabel } from "@/lib/utils";
 import type { FlightRow, SeatClass } from "@/lib/types";
 
 export interface FlightCardProps {
@@ -28,7 +28,7 @@ export function FlightCard({ flight, classAvailability }: FlightCardProps) {
             {flight.flight_no}
           </p>
           <h3 className="text-lg font-semibold text-slate-900">
-            {flight.origin} → {flight.destination}
+            {airportLabel(flight.origin)} → {airportLabel(flight.destination)}
           </h3>
           <p className="text-sm text-slate-600">{flight.aircraft_type}</p>
         </div>

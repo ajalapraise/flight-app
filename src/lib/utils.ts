@@ -1,5 +1,22 @@
 // Tiny formatting helpers used by the UI.
 
+export const AIRPORT_NAMES: Record<string, string> = {
+  LHR: "London Heathrow",
+  JFK: "New York J.F. Kennedy",
+  DXB: "Dubai International",
+  SIN: "Singapore Changi",
+  NRT: "Tokyo Narita",
+  LAX: "Los Angeles International",
+  CDG: "Paris Charles de Gaulle",
+  DOH: "Doha Hamad International",
+};
+
+/** Returns "City Name (CODE)" or just "CODE" if the airport is unknown. */
+export function airportLabel(code: string): string {
+  const name = AIRPORT_NAMES[code];
+  return name ? `${name} (${code})` : code;
+}
+
 export function formatPrice(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

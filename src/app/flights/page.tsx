@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { FlightCard } from "@/components/FlightCard";
-import { formatDate } from "@/lib/utils";
+import { formatDate, airportLabel } from "@/lib/utils";
 import type { FlightRow, SeatClass } from "@/lib/types";
 
 interface SearchParams {
@@ -88,7 +88,7 @@ export default async function FlightsPage({
       </Link>
       <header className="mt-2 mb-6">
         <h1 className="text-2xl font-semibold text-slate-900">
-          {origin} → {destination}
+          {airportLabel(origin)} → {airportLabel(destination)}
         </h1>
         <p className="mt-1 text-sm text-slate-600">
           {formatDate(date)} · {passengers} passenger

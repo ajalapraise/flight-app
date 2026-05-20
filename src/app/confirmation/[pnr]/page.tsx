@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { formatDateTime, formatPrice } from "@/lib/utils";
+import { formatDateTime, formatPrice, airportLabel } from "@/lib/utils";
 import type { BookingRow, FlightRow, SeatRow, PassengerRow } from "@/lib/types";
 
 export default async function ConfirmationPage({
@@ -65,7 +65,7 @@ export default async function ConfirmationPage({
           <Item label="Flight" value={flight.flight_no} />
           <Item
             label="Route"
-            value={`${flight.origin} → ${flight.destination}`}
+            value={`${airportLabel(flight.origin)} → ${airportLabel(flight.destination)}`}
           />
           <Item label="Departure" value={formatDateTime(flight.departs_at)} />
           <Item label="Arrival" value={formatDateTime(flight.arrives_at)} />
